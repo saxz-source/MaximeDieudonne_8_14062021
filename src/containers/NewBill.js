@@ -29,6 +29,7 @@ export default class NewBill {
         if (!this.checkFileExtension(file.name)) return;
 
         const filePath = e.target.value.split(/\\/g);
+        console.log(filePath)
         const fileName = filePath[filePath.length - 1];
         this.firestore.storage
             .ref(`justificatifs/${fileName}`)

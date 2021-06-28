@@ -4,7 +4,8 @@ import LoadingPage from "./LoadingPage.js"
 
 import Actions from './Actions.js'
 
-const row = (bill) => {
+export const row = (bill) => {
+  console.log(bill)
   return (`
     <tr>
       <td>${bill.type}</td>
@@ -19,7 +20,7 @@ const row = (bill) => {
     `)
   }
 
-const rows = (data) => {
+  export const rows = (data) => {
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
