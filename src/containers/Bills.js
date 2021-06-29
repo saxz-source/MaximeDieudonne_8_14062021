@@ -75,7 +75,6 @@ export default class {
                         .map((b) => {
                             return { ...b, date: b.date };
                         });
-                    console.log("length", bills.length);
                     return bills;
                 })
                 .catch((error) => error);
