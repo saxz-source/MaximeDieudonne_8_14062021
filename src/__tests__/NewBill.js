@@ -5,12 +5,12 @@ import userEvent from "@testing-library/user-event";
 import firebase from "../__mocks__/firebase.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 
-const file1 
+const file1 = new File([""], "filename", { type: 'text/html' });
 
 describe("Given I am connected as an employee", () => {
     describe("When I am on NewBill Page", () => {
         test("Then it should render the page", () => {
-            const html = NewBillUI();
+            const html = NewBillUI({data : []});
             document.body.innerHTML = html;
             expect(screen.getByText("Envoyer une note de frais")).toBeTruthy();
         });

@@ -69,12 +69,12 @@ export default class {
                             }
                         })
                         .filter((bill) => bill.email === userEmail)
-                        .sort(function (a, b) {
-                            return new Date(a.date) - new Date(b.date);
-                        })
-                        .map((b) => {
-                            return { ...b, date: b.date };
-                        });
+                        // .sort(function (a, b) {
+                        //     return new Date(b.date) - new Date(a.date)  ;
+                        // })
+                        // .map((b) => {
+                        //     return { ...b, date: b.date };
+                        // });
                     return bills;
                 })
                 .catch((error) => error);
