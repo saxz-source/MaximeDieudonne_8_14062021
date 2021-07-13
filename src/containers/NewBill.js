@@ -22,6 +22,7 @@ export default class NewBill {
     }
 
     handleChangeFile = (e) => {
+        console.log(e)
         const file = this.document.querySelector(`input[data-testid="file"]`)
             .files[0];
 
@@ -68,10 +69,10 @@ export default class NewBill {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log(
-            'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-            e.target.querySelector(`input[data-testid="datepicker"]`).value
-        );
+        // console.log(
+        //     'e.target.querySelector(`input[data-testid="datepicker"]`).value',
+        //     e.target.querySelector(`input[data-testid="datepicker"]`).value
+        // );
         const email = JSON.parse(localStorage.getItem("user")).email;
         const bill = {
             email,

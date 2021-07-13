@@ -24,7 +24,7 @@ describe("Given I am connected as an employee", () => {
                     /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
                 )
                 .map((a) => a.innerHTML);
-          //  console.log(dates);
+            //  console.log(dates);
             const antiChrono = (a, b) => (a < b ? 1 : -1);
             const datesSorted = [...dates].sort(antiChrono);
             expect(dates).toEqual(datesSorted);
@@ -53,23 +53,45 @@ describe("Given I am connected as an employee", () => {
                 firestore: null,
                 localStorage: window.localStorage,
             });
+
+            // Define the DOM
             const html = BillsUI({ data: bills });
             document.body.innerHTML = html;
 
-            const iconEye = screen.getAllByTestId("icon-eye");
+            // // Define the eye icon
+            //         const iconEye = screen.getAllByTestId("icon-eye");
 
+            //         // Mock the modal
+            //         $.fn.modal = jest.fn();
+
+            //         if (iconEye) {
+            //             iconEye.forEach((icon) => {
+            //                 const handleClickIconEye = jest.fn(() =>
+            //                     billsInstance.handleClickIconEye(icon)
+            //                 );
+            //                 icon.addEventListener("click", handleClickIconEye);
+            //                 userEvent.click(icon);
+            //                 expect(handleClickIconEye).toHaveBeenCalled();
+            //             });
+            //         }
+
+            // Define the eye icon
+            const iconEye = screen.getAllByTestId("icon-eye")[0];
+
+            // Mock the modal
             $.fn.modal = jest.fn();
 
-            if (iconEye) {
-                iconEye.forEach((icon) => {
-                    const handleClickIconEye = jest.fn(() =>
-                        billsInstance.handleClickIconEye(icon)
-                    );
-                    icon.addEventListener("click", handleClickIconEye);
-                    userEvent.click(icon);
-                    expect(handleClickIconEye).toHaveBeenCalled();
-                });
-            }
+            const handleClickIconEye = jest.fn(() =>
+                billsInstance.handleClickIconEye(iconEye)
+            );
+            iconEye.addEventListener("click", handleClickIconEye);
+            fireEvent.click(iconEye);
+            expect(handleClickIconEye).toHaveBeenCalled();
+
+            let newHTML = document.getElementsByTagName("body")[0];
+            document.body.innerHTML = newHTML;
+
+            expect(newHTML.classList.contains("modal-open")).toBeTruthy;
         });
     });
     describe("When i click on the NewBill button", () => {
@@ -107,6 +129,8 @@ describe("Given I am connected as an employee", () => {
             newBillButton.addEventListener("click", handleClickNewBill);
             userEvent.click(newBillButton);
             expect(handleClickNewBill).toHaveBeenCalled();
+
+            //  expect(modalFile).toBeTruthy()
 
             //const way = billsInstance.onNavigate
             // const follow = jest.fn(() =>  billsInstance.onNavigate(ROUTES_PATH["NewBill"]))
