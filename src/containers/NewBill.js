@@ -22,7 +22,6 @@ export default class NewBill {
     }
 
     handleChangeFile = (e) => {
-        console.log(e)
         const file = this.document.querySelector(`input[data-testid="file"]`)
             .files[0];
 
@@ -32,7 +31,7 @@ export default class NewBill {
         const filePath = e.target.value.split(/\\/g);
         console.log(filePath)
         const fileName = filePath[filePath.length - 1];
-        this.firestore.storage
+        this.firestore?.storage
             .ref(`justificatifs/${fileName}`)
             .put(file)
             .then((snapshot) => snapshot.ref.getDownloadURL())
@@ -51,28 +50,34 @@ export default class NewBill {
                     fileStringArray[fileStringArray.length - 1].toLowerCase()
             ).length < 1
         ) {
-            this.buttonSendBill.setAttribute("disabled", "true");
-            let errorMessage = this.document.createElement("div");
-            errorMessage.textContent =
-                "Seuls les fichiers jpg, jpeg et png sont autorisés";
-            errorMessage.style.color = "red";
-            errorMessage.id = "fileInputError";
-            this.fileInput.parentNode.appendChild(errorMessage);
+            this.displayAnError();
             return false;
         } else {
-            this.buttonSendBill.removeAttribute("disabled");
-            if (document.getElementById("fileInputError"))
-                document.getElementById("fileInputError").remove();
+            this.removeErrorState();
             return true;
+        }
+    }
+
+    displayAnError() {
+        this.buttonSendBill.setAttribute("disabled", "true");
+        let errorMessage = this.document.createElement("div");
+        errorMessage.textContent =
+            "Seuls les fichiers jpg, jpeg et png sont autorisés";
+        errorMessage.style.color = "red";
+        errorMessage.id = "fileInputError";
+        this.fileInput.parentNode.appendChild(errorMessage);
+    }
+
+    removeErrorState() {
+        this.buttonSendBill.removeAttribute("disabled");
+        if (document.getElementById("fileInputError")) {
+            document.getElementById("fileInputError").remove();
         }
     }
 
     handleSubmit = (e) => {
         e.preventDefault();
-        // console.log(
-        //     'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-        //     e.target.querySelector(`input[data-testid="datepicker"]`).value
-        // );
+   
         const email = JSON.parse(localStorage.getItem("user")).email;
         const bill = {
             email,

@@ -32,7 +32,7 @@ describe("Given I am connected as an employee", () => {
     });
 
     describe("When i click on the eye-icon", () => {
-        test("Then it shoud open the modal", () => {
+        test("Then it should open the modal", () => {
             const onNavigate = (pathname) => {
                 document.body.innerHTML = ROUTES({ pathname });
             };
@@ -58,44 +58,44 @@ describe("Given I am connected as an employee", () => {
             const html = BillsUI({ data: bills });
             document.body.innerHTML = html;
 
-            // // Define the eye icon
-            //         const iconEye = screen.getAllByTestId("icon-eye");
-
-            //         // Mock the modal
-            //         $.fn.modal = jest.fn();
-
-            //         if (iconEye) {
-            //             iconEye.forEach((icon) => {
-            //                 const handleClickIconEye = jest.fn(() =>
-            //                     billsInstance.handleClickIconEye(icon)
-            //                 );
-            //                 icon.addEventListener("click", handleClickIconEye);
-            //                 userEvent.click(icon);
-            //                 expect(handleClickIconEye).toHaveBeenCalled();
-            //             });
-            //         }
-
             // Define the eye icon
-            const iconEye = screen.getAllByTestId("icon-eye")[0];
+                    const iconEye = screen.getAllByTestId("icon-eye");
 
-            // Mock the modal
-            $.fn.modal = jest.fn();
+                    // Mock the modal
+                    $.fn.modal = jest.fn();
 
-            const handleClickIconEye = jest.fn(() =>
-                billsInstance.handleClickIconEye(iconEye)
-            );
-            iconEye.addEventListener("click", handleClickIconEye);
-            fireEvent.click(iconEye);
-            expect(handleClickIconEye).toHaveBeenCalled();
+                   
+                        iconEye.forEach((icon) => {
+                            const handleClickIconEye = jest.fn(() =>
+                                billsInstance.handleClickIconEye(icon)
+                            );
+                            icon.addEventListener("click", handleClickIconEye);
+                            userEvent.click(icon);
+                            expect(handleClickIconEye).toHaveBeenCalled();
+                        });
+                    
 
-            let newHTML = document.getElementsByTagName("body")[0];
+            // // Define the eye icon
+            // const iconEye = screen.getAllByTestId("icon-eye")[0];
+
+            // // Mock the modal
+            // $.fn.modal = jest.fn();
+
+            // const handleClickIconEye = jest.fn((e) =>
+            //     billsInstance.handleClickIconEye(iconEye)
+            // );
+            // iconEye.addEventListener("click", handleClickIconEye);
+            // userEvent.click(iconEye);
+            // expect(handleClickIconEye).toHaveBeenCalled();
+
+            const newHTML = document.getElementsByTagName("body")[0];
             document.body.innerHTML = newHTML;
 
             expect(newHTML.classList.contains("modal-open")).toBeTruthy;
         });
     });
     describe("When i click on the NewBill button", () => {
-        test("Then it shoud navigate to NewBill UI", () => {
+        test("Then it should navigate to NewBill UI", () => {
             const onNavigate = (pathname) => {
                 document.body.innerHTML = ROUTES({ pathname });
             };
@@ -129,15 +129,6 @@ describe("Given I am connected as an employee", () => {
             newBillButton.addEventListener("click", handleClickNewBill);
             userEvent.click(newBillButton);
             expect(handleClickNewBill).toHaveBeenCalled();
-
-            //  expect(modalFile).toBeTruthy()
-
-            //const way = billsInstance.onNavigate
-            // const follow = jest.fn(() =>  billsInstance.onNavigate(ROUTES_PATH["NewBill"]))
-
-            //        expect(follow).toHaveReturnedWith("NewBill")
-            //    const rootDiv = document.getElementById("root");
-            //    expect(rootDiv).getAllByText("ew")
         });
     });
 });

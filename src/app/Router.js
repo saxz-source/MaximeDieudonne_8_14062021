@@ -44,7 +44,7 @@ export default () => {
             bills
                 .getBills()
                 .then((data) => {
-                    console.log(data);
+                    //console.log(data);
                     rootDiv.innerHTML = BillsUI({ data });
                     const divIcon1 = document.getElementById("layout-icon1");
                     const divIcon2 = document.getElementById("layout-icon2");
