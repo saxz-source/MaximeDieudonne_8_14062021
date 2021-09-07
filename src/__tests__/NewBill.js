@@ -3,6 +3,7 @@ import {
     fireEvent,
     getNodeText,
     getByTestId,
+    toBeDisabled
 } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import NewBillUI from "../views/NewBillUI.js";
@@ -12,6 +13,7 @@ import firebase from "../__mocks__/firebase.js";
 import Firestore from "../app/Firestore.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import { ROUTES } from "../constants/routes.js";
+import '@testing-library/jest-dom'
 
 // Fake Bill for tests
 const fakeBill = {
@@ -27,8 +29,7 @@ const fakeBill = {
     fileName: "jpgFile.jpg",
 };
 
-
-    // Define global datas we need
+// Set an instance of newBill class
 const setUp = () => {
     const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
@@ -43,8 +44,6 @@ const setUp = () => {
             type: "Employee",
         })
     );
-
-    // Set a new fake Bill
     const newBillInstance = new NewBill({
         document,
         onNavigate,
@@ -54,6 +53,7 @@ const setUp = () => {
     return newBillInstance;
 };
 
+// Define fake files
 const fileJPG = new File([""], "jpgFile.jpg", { type: "image/png" });
 const filePNG = new File([""], "pngFile.png", { type: "image/png" });
 const fileGIF = new File([""], "gifFile.gif", { type: "image/png" });
@@ -82,19 +82,13 @@ describe("Given i am on the NewBill page", () => {
             const handleChangeFile = jest.fn(
                 () => newBillInstance.handleChangeFile
             );
-            //    spyOn(newBillInstance, "checkFileExtension");
+
             fileInput.addEventListener("change", handleChangeFile);
             fireEvent.change(fileInput, { target: { files: [fileJPG] } });
             expect(handleChangeFile).toHaveBeenCalled();
 
             expect(fileInput.files[0]).toBeTruthy();
             expect(fileInput.files[0].name).toBe("jpgFile.jpg");
-
-            // let file = fileInput.files[0];
-            // newBillInstance.checkFileExtension(file);
-            // expect(newBillInstance.checkFileExtension).toHaveBeenCalledWith(
-            //     fileInput.files[0].name
-            // );
         });
         test("filePath and fileName constant has to be good before the file is stored", () => {
             const newBillInstance = setUp();
@@ -102,53 +96,32 @@ describe("Given i am on the NewBill page", () => {
             const html = NewBillUI();
             document.body.innerHTML = html;
 
-            let event = jQuery.Event('change', {
-                target: {
-                  files: [{
-                    name: "jpgFile.jpg", type: "image/jpg"
-                  }]
-                }
-              });
-              const fileInput = screen.getByTestId("file");
+            // let event = jQuery.Event('change', {
+            //     target: {
+            //       files: [{
+            //         name: "jpgFile.jpg", type: "image/jpg"
+            //       }]
+            //     }
+            //   });
+            const fileInput = screen.getByTestId("file");
 
-              const handleChangeFile = jest.fn((e) => newBillInstance.handleChangeFile(e))
+            const handleChangeFile = jest.fn((e) =>
+                newBillInstance.handleChangeFile(e)
+            );
 
-              fileInput.addEventListener("change", handleChangeFile);
-              fireEvent.change(fileInput, { target: { files: [fileJPG] } });
-              expect(handleChangeFile).toHaveBeenCalled();
-
-            //   const handleChangeFile = jest.fn(
-            //             () => newBillInstance.handleChangeFile
-            //     );
-
-                
-            //     spyOn(newBillInstance, "checkFileExtension")
-            //     handleChangeFile(event)
-            //     expect(newBillInstance.checkFileExtension).toHaveBeenCalled()
-
-
-        //     const fileInput = screen.getByTestId("file");
-        //     expect(fileInput).toBeTruthy();
-        //     const handleChangeFile = jest.fn(
-        //         () => newBillInstance.handleChangeFile
-        //     );
-        //     fileInput.addEventListener("change", handleChangeFile);
-        //     fireEvent.change(fileInput, { target: { files: [fileJPG] } });
-        //     const filePath= e.target.value.split(/\\/g);
-        //     const fileName = filePath[filePath.length - 1]
-        //   //  expect(filePath).toBe("C:\fakepath\jgpFile.jpg")
-        //     expect(fileName).toBe("jgpFile.jpg")
+            fileInput.addEventListener("change", handleChangeFile);
+            fireEvent.change(fileInput, { target: { files: [fileJPG] } });
+            expect(handleChangeFile).toHaveBeenCalled();
         });
     });
     describe("When the file format is jpg or png", () => {
         test("Then it shouldn't display an error", () => {
-            const newBillInstance = setUp();
-
             // Define DOM context
             const html = NewBillUI();
             document.body.innerHTML = html;
 
-           
+            const newBillInstance = setUp();
+
             expect(newBillInstance.checkFileExtension(fileJPG.name)).toBe(true);
             expect(newBillInstance.checkFileExtension(filePNG.name)).toBe(true);
 
@@ -159,7 +132,10 @@ describe("Given i am on the NewBill page", () => {
             spyOn(newBillInstance, "removeErrorState");
             newBillInstance.checkFileExtension(filePNG.name);
             expect(newBillInstance.removeErrorState).toHaveBeenCalled();
-            // expect(document.getElementById("fileInputError")).toBeFalsy();
+            const errorMessage = document.getElementById("fileInputError");
+            expect(errorMessage).not.toBeTruthy();
+            const sendButton = screen.getByRole("button")
+            expect(sendButton).not.toBeDisabled();
         });
         test("Then it shouldn't disable the send button", () => {
             const newBillInstance = setUp();
@@ -170,19 +146,16 @@ describe("Given i am on the NewBill page", () => {
 
             //   spyOn(newBillInstance, "checkFileExtension");
             newBillInstance.checkFileExtension(fileJPG.name);
-            let sendButton = screen.getByTestId("btn-send-bill");
-            expect(sendButton.hasAttribute("disabled")).toBe(false);
+         
         });
     });
     describe("When the file format is NOT jpg or png", () => {
         test("Then it should display an error", () => {
-            const newBillInstance = setUp();
-
             // Define DOM context
             const html = NewBillUI();
             document.body.innerHTML = html;
 
-            // spyOn(newBillInstance, "checkFileExtension");
+            const newBillInstance = setUp();
 
             expect(newBillInstance.checkFileExtension(fileGIF.name)).toBe(
                 false
@@ -194,6 +167,11 @@ describe("Given i am on the NewBill page", () => {
             spyOn(newBillInstance, "removeErrorState");
             newBillInstance.checkFileExtension(fileGIF.name);
             expect(newBillInstance.removeErrorState).not.toHaveBeenCalled();
+
+            const errorMessage = document.getElementById("fileInputError");
+            expect(errorMessage).toBeTruthy();
+            const sendButton = screen.getByRole("button")
+            expect(sendButton).toBeDisabled();
         });
         test("Then it should disable the send button", () => {
             const newBillInstance = setUp();
@@ -202,11 +180,12 @@ describe("Given i am on the NewBill page", () => {
             const html = NewBillUI();
             document.body.innerHTML = html;
 
-            // newBillInstance.checkFileExtension(fileGIF.name);
-            // newBillInstance.displayAnError();
-            // let sendButton = screen.getByTestId("btn-send-bill");
+            newBillInstance.checkFileExtension(fileGIF.name);
+            newBillInstance.displayAnError();
+          //  const sendButton = screen.getByTestId("btn-send-bill");
             // expect(screen.getByTestId("btn-send-bill")).toBeTruthy();
-            // expect(sendButton.hasAttribute("disabled")).toBe(true);
+            // const sendButton = screen.getByRole("button")
+            // expect(sendButton).toBeDisabled();
         });
     });
 
@@ -263,33 +242,32 @@ describe("Given i am on the NewBill page", () => {
     });
 });
 
-
 // test d'intégration POST
 describe("Given I am a user connected on NewBill", () => {
     describe("When I send the new bill", () => {
-      test("the bill is send by API POST", async () => {
-         const getSpy = jest.spyOn(firebase, "post")
-         const bills = await firebase.post()
-         expect(getSpy).toHaveBeenCalledTimes(1)
-         expect(bills.message).toBe("Bien reçu")
-      })
-      test("fetches bills from an API and fails with 404 message error", async () => {
-        firebase.post.mockImplementationOnce(() =>
-          Promise.reject(new Error("Erreur 404"))
-        )
-        const html = BillsUI({ error: "Erreur 404" })
-        document.body.innerHTML = html
-        const message = await screen.getByText(/Erreur 404/)
-        expect(message).toBeTruthy()
-      })
-      test("fetches messages from an API and fails with 500 message error", async () => {
-        firebase.post.mockImplementationOnce(() =>
-          Promise.reject(new Error("Erreur 500"))
-        )
-        const html = BillsUI({ error: "Erreur 500" })
-        document.body.innerHTML = html
-        const message = await screen.getByText(/Erreur 500/)
-        expect(message).toBeTruthy()
-      })
-    })
-  })
+        test("the bill is send by API POST", async () => {
+            const getSpy = jest.spyOn(firebase, "post");
+            const bills = await firebase.post();
+            expect(getSpy).toHaveBeenCalledTimes(1);
+            expect(bills.message).toBe("Bien reçu");
+        });
+        test("fetches bills from an API and fails with 404 message error", async () => {
+            firebase.post.mockImplementationOnce(() =>
+                Promise.reject(new Error("Erreur 404"))
+            );
+            const html = BillsUI({ error: "Erreur 404" });
+            document.body.innerHTML = html;
+            const message = await screen.getByText(/Erreur 404/);
+            expect(message).toBeTruthy();
+        });
+        test("fetches messages from an API and fails with 500 message error", async () => {
+            firebase.post.mockImplementationOnce(() =>
+                Promise.reject(new Error("Erreur 500"))
+            );
+            const html = BillsUI({ error: "Erreur 500" });
+            document.body.innerHTML = html;
+            const message = await screen.getByText(/Erreur 500/);
+            expect(message).toBeTruthy();
+        });
+    });
+});

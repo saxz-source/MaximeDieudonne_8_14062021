@@ -33,10 +33,13 @@ describe("Given I am connected as an employee", () => {
 
     describe("When i click on the eye-icon", () => {
         test("Then it should open the modal", () => {
+            // Define the DOM
+            const html = BillsUI({ data: bills });
+            document.body.innerHTML = html;
+            // Set up the instance of Bills class
             const onNavigate = (pathname) => {
                 document.body.innerHTML = ROUTES({ pathname });
             };
-
             Object.defineProperty(window, "localStorage", {
                 value: localStorageMock,
             });
@@ -46,52 +49,32 @@ describe("Given I am connected as an employee", () => {
                     type: "Employee",
                 })
             );
-
+            const firestore = null;
+            // Create a bills instance
             const billsInstance = new Bills({
                 document,
                 onNavigate,
-                firestore: null,
+                firestore,
                 localStorage: window.localStorage,
             });
 
-            // Define the DOM
-            const html = BillsUI({ data: bills });
-            document.body.innerHTML = html;
-
+            // Mock the modal
+            $.fn.modal = jest.fn();
             // Define the eye icon
-                    const iconEye = screen.getAllByTestId("icon-eye");
-
-                    // Mock the modal
-                    $.fn.modal = jest.fn();
-
-                   
-                        iconEye.forEach((icon) => {
-                            const handleClickIconEye = jest.fn(() =>
-                                billsInstance.handleClickIconEye(icon)
-                            );
-                            icon.addEventListener("click", handleClickIconEye);
-                            userEvent.click(icon);
-                            expect(handleClickIconEye).toHaveBeenCalled();
-                        });
-                    
-
-            // // Define the eye icon
-            // const iconEye = screen.getAllByTestId("icon-eye")[0];
-
-            // // Mock the modal
-            // $.fn.modal = jest.fn();
-
-            // const handleClickIconEye = jest.fn((e) =>
-            //     billsInstance.handleClickIconEye(iconEye)
-            // );
-            // iconEye.addEventListener("click", handleClickIconEye);
-            // userEvent.click(iconEye);
-            // expect(handleClickIconEye).toHaveBeenCalled();
-
-            const newHTML = document.getElementsByTagName("body")[0];
-            document.body.innerHTML = newHTML;
-
-            expect(newHTML.classList.contains("modal-open")).toBeTruthy;
+            const iconEye = screen.getAllByTestId("icon-eye")[0];
+            // Mock the function
+            const handleClickIconEye = jest.fn(() =>
+                billsInstance.handleClickIconEye(iconEye)
+            );
+            // Set a click listener on the icon
+            iconEye.addEventListener("click", handleClickIconEye);
+            //Trigger the function
+            fireEvent.click(iconEye);
+            // Check if the function has been called
+            expect(handleClickIconEye).toHaveBeenCalled();
+            // Check if the modal is in the DOM
+            const modal = document.getElementById("modaleFile");
+            expect(modal).toBeTruthy();
         });
     });
     describe("When i click on the NewBill button", () => {

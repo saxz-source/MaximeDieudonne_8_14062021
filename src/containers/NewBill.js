@@ -26,19 +26,21 @@ export default class NewBill {
             .files[0];
 
         // Handle File Extension
-        if (!this.checkFileExtension(file.name)) return;
+        if (this.checkFileExtension(file.name)){
+            const filePath = e.target.value.split(/\\/g);
+            console.log(filePath)
+            const fileName = filePath[filePath.length - 1];
+            this.firestore?.storage
+                .ref(`justificatifs/${fileName}`)
+                .put(file)
+                .then((snapshot) => snapshot.ref.getDownloadURL())
+                .then((url) => {
+                    this.fileUrl = url;
+                    this.fileName = fileName;
+                });
+        }
 
-        const filePath = e.target.value.split(/\\/g);
-        console.log(filePath)
-        const fileName = filePath[filePath.length - 1];
-        this.firestore?.storage
-            .ref(`justificatifs/${fileName}`)
-            .put(file)
-            .then((snapshot) => snapshot.ref.getDownloadURL())
-            .then((url) => {
-                this.fileUrl = url;
-                this.fileName = fileName;
-            });
+       
     };
 
     checkFileExtension(fileName) {
