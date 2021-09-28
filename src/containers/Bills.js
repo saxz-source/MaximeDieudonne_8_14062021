@@ -38,10 +38,9 @@ export default class {
             );
         $("#modaleFile").modal("show");
     };
-
-    // not need to cover this function by tests
     /* istanbul ignore next */
 
+    // not need to cover this function by tests
     getBills = () => {
         const userEmail = localStorage.getItem("user")
             ? JSON.parse(localStorage.getItem("user")).email
@@ -71,12 +70,6 @@ export default class {
                             }
                         })
                         .filter((bill) => bill.email === userEmail)
-                        // .sort(function (a, b) {
-                        //     return new Date(b.date) - new Date(a.date)  ;
-                        // })
-                        // .map((b) => {
-                        //     return { ...b, date: b.date };
-                        // });
                     return bills;
                 })
                 .catch((error) => error);

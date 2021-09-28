@@ -24,14 +24,13 @@ describe("Given I am connected as an employee", () => {
                     /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
                 )
                 .map((a) => a.innerHTML);
-            //  console.log(dates);
             const antiChrono = (a, b) => (a < b ? 1 : -1);
             const datesSorted = [...dates].sort(antiChrono);
             expect(dates).toEqual(datesSorted);
         });
     });
 
-    describe("When i click on the eye-icon", () => {
+    describe("When i click on a eye-icon", () => {
         test("Then it should open the modal", () => {
             // Define the DOM
             const html = BillsUI({ data: bills });
@@ -62,7 +61,7 @@ describe("Given I am connected as an employee", () => {
             $.fn.modal = jest.fn();
             // Define the eye icon
             const iconEye = screen.getAllByTestId("icon-eye")[0];
-            // Mock the function
+            // Mock the click handler
             const handleClickIconEye = jest.fn(() =>
                 billsInstance.handleClickIconEye(iconEye)
             );
@@ -79,6 +78,10 @@ describe("Given I am connected as an employee", () => {
     });
     describe("When i click on the NewBill button", () => {
         test("Then it should navigate to NewBill UI", () => {
+            //Define the html context
+            const html = BillsUI({ data: bills });
+            document.body.innerHTML = html;
+            // Set up the instance of NewBill class
             const onNavigate = (pathname) => {
                 document.body.innerHTML = ROUTES({ pathname });
             };
@@ -92,30 +95,38 @@ describe("Given I am connected as an employee", () => {
                     type: "Employee",
                 })
             );
-
+            //Create an instance of NewBill class
             const billsInstance = new Bills({
                 document,
                 onNavigate,
                 firestore: null,
                 localStorage: window.localStorage,
             });
-            const html = BillsUI({ data: bills });
-            document.body.innerHTML = html;
 
+            //Mock the modal
+            $.fn.modal = jest.fn();
+            //Get the click button
             const newBillButton = screen.getByTestId("btn-new-bill");
 
-            $.fn.modal = jest.fn();
-
+            //Mock the click handler
             const handleClickNewBill = jest.fn(() =>
                 billsInstance.handleClickNewBill()
             );
+            //Set the event listener
             newBillButton.addEventListener("click", handleClickNewBill);
+            //Trigger the click
             userEvent.click(newBillButton);
+            // The click is handled
             expect(handleClickNewBill).toHaveBeenCalled();
+            // We navigate to newBill's UI
+            expect(
+                screen.getAllByText("Envoyer une note de frais")
+            ).toBeTruthy();
         });
     });
 });
 
+// Integration Test for GET request
 describe("Given I am a user connected as Employee", () => {
     describe("When I navigate to Bills", () => {
         test("fetches bills from mock API GET", async () => {
@@ -141,15 +152,6 @@ describe("Given I am a user connected as Employee", () => {
             document.body.innerHTML = html;
             const message = await screen.getByText(/Erreur 500/);
             expect(message).toBeTruthy();
-        });
-    });
-});
-
-describe("Given I am connected to the Bill page", () => {
-    describe("I click on the 'newBill Button'", () => {
-        test("It should render newBills Form", () => {
-            document.body.innerHTML = NewBillUI();
-            expect(screen.getByText("Envoyer une note de frais")).toBeTruthy();
         });
     });
 });

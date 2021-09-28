@@ -26,9 +26,9 @@ export default class NewBill {
             .files[0];
 
         // Handle File Extension
-        if (this.checkFileExtension(file.name)){
+        if (this.checkFileExtension(file.name)) {
             const filePath = e.target.value.split(/\\/g);
-            console.log(filePath)
+            console.log(filePath);
             const fileName = filePath[filePath.length - 1];
             this.firestore?.storage
                 .ref(`justificatifs/${fileName}`)
@@ -39,8 +39,6 @@ export default class NewBill {
                     this.fileName = fileName;
                 });
         }
-
-       
     };
 
     checkFileExtension(fileName) {
@@ -62,7 +60,7 @@ export default class NewBill {
 
     displayAnError() {
         this.buttonSendBill.setAttribute("disabled", "true");
-        let errorMessage = this.document.createElement("div");
+        const errorMessage = this.document.createElement("div");
         errorMessage.textContent =
             "Seuls les fichiers jpg, jpeg et png sont autorisés";
         errorMessage.style.color = "red";
@@ -72,14 +70,16 @@ export default class NewBill {
 
     removeErrorState() {
         this.buttonSendBill.removeAttribute("disabled");
-        if (document.getElementById("fileInputError")) {
-            document.getElementById("fileInputError").remove();
-        }
+        this.removeErrorElement();
+    }
+
+    removeErrorElement() {
+        document.getElementById("fileInputError")?.remove();
     }
 
     handleSubmit = (e) => {
         e.preventDefault();
-   
+
         const email = JSON.parse(localStorage.getItem("user")).email;
         const bill = {
             email,

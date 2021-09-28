@@ -23,18 +23,21 @@ const bill = {
 
 describe("Given I am connected as a user and I am on Bills Page", () => {
     describe("When bill data is passed to BillsUI", () => {
-        test("Then, they should render the UI", () => {
+        test("Then, it should render the UI", () => {
+            // Define html context with "bills" data
             const html = BillsUI(bills);
             document.body.innerHTML = html;
+            //Check if the UI is displayed
             expect(screen.getByText("Mes notes de frais")).toBeTruthy();
         });
     });
 
     describe("When bills data is passed to BillsUI ", () => {
         test("Then, we should see the data", () => {
+            // Define the html context
             const mappedBills = row(bill);
             document.body.innerHTML = mappedBills;
-
+            //Check if we have all the datas
             expect(mappedBills).toMatch(bill.type);
             expect(mappedBills).toMatch(bill.name);
             expect(mappedBills).toMatch(bill.status);
@@ -46,16 +49,20 @@ describe("Given I am connected as a user and I am on Bills Page", () => {
 
     describe("When I am on Bills page but it is loading", () => {
         test("Then, Loading page should be rendered", () => {
+            //Define the html context
             const html = BillsUI({ loading: true });
             document.body.innerHTML = html;
+            // Check we have the loading message
             expect(screen.getAllByText("Loading...")).toBeTruthy();
         });
     });
 
     describe("When I am on Bills page but back-end send an error message", () => {
         test("Then, Error page should be rendered", () => {
+            //Define the html context
             const html = BillsUI({ error: "some error message" });
             document.body.innerHTML = html;
+            // Check if we have the error message
             expect(screen.getAllByText("Erreur")).toBeTruthy();
         });
     });
