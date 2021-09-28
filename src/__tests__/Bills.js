@@ -1,4 +1,4 @@
-import { screen, fireEvent } from "@testing-library/dom";
+import { screen, fireEvent, queryByTestId } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
@@ -29,7 +29,37 @@ describe("Given I am connected as an employee", () => {
             expect(dates).toEqual(datesSorted);
         });
     });
+    describe("If there is no Icon-eye", () => {
+        test("no event listener should be put on it", () => {
+            const html = BillsUI({ data: [] });
+            document.body.innerHTML = html;
+            //to-do write expect expression
+            const onNavigate = (pathname) => {
+                document.body.innerHTML = ROUTES({ pathname });
+            };
+            Object.defineProperty(window, "localStorage", {
+                value: localStorageMock,
+            });
+            window.localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    type: "Employee",
+                })
+            );
+            const firestore = null;
+            // Create a bills instance
+            const billsInstance = new Bills({
+                document,
+                onNavigate,
+                firestore,
+                localStorage: window.localStorage,
+            });
 
+            let icon = screen.queryByTestId("iconEye")
+            expect(icon).not.toBeTruthy()
+         
+        });
+    });
     describe("When i click on a eye-icon", () => {
         test("Then it should open the modal", () => {
             // Define the DOM
@@ -60,7 +90,7 @@ describe("Given I am connected as an employee", () => {
             // Mock the modal
             $.fn.modal = jest.fn();
             // Define the eye icon
-            const iconEye = screen.getAllByTestId("icon-eye")[0];
+            let iconEye = screen.getAllByTestId("icon-eye")[0];
             // Mock the click handler
             const handleClickIconEye = jest.fn(() =>
                 billsInstance.handleClickIconEye(iconEye)
@@ -74,6 +104,8 @@ describe("Given I am connected as an employee", () => {
             // Check if the modal is in the DOM
             const modal = document.getElementById("modaleFile");
             expect(modal).toBeTruthy();
+            iconEye = false
+            expect(iconEye).toBe(false)
         });
     });
     describe("When i click on the NewBill button", () => {

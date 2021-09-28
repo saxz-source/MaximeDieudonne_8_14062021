@@ -38,7 +38,6 @@ export default class {
             );
         $("#modaleFile").modal("show");
     };
-    /* istanbul ignore next */
 
     // not need to cover this function by tests
     getBills = () => {
